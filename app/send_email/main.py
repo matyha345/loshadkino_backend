@@ -20,7 +20,7 @@ app.add_middleware(
 @app.post("/submit")
 async def handle_form_submission(form_data: FormData):
     try:
-        logger.info(f"Received form data: {form_data.json()}")
+        # logger.info(f"Received form data: {form_data.json()}")
         response = send_email(form_data)
         return response
     except Exception as e:

@@ -14,13 +14,13 @@ env = Environment(loader=FileSystemLoader(current_dir))
 template = env.get_template("email_template.html")
 logger = logging.getLogger(__name__)
 
+
 def send_email(form_data):
     try:
-        current_datetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        logger.info(f"Current date and time: {current_datetime}")
-
+        current_datetime = datetime.datetime.now()
+        formatted_datetime = f" {current_datetime.strftime('%H:%M:%S')} ; {current_datetime.strftime('%Y-%m-%d')}"
         email_content = template.render(
-            current_datetime=current_datetime,
+            formatted_datetime=formatted_datetime,
             firstName=form_data.firstName,
             lastName=form_data.lastName,
             phone=form_data.phone,
@@ -28,19 +28,15 @@ def send_email(form_data):
             telegram=form_data.telegram,
             info=form_data.info
         )
-
         msg = MIMEMultipart("alternative")
         msg['From'] = EMAIL
         msg['To'] = RECIPIENT_EMAIL
         msg['Subject'] = "New Contact Form Submission"
-
         part = MIMEText(email_content, "html")
         msg.attach(part)
-
         with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as server:
             server.login(EMAIL, PASSWORD)
             server.sendmail(EMAIL, RECIPIENT_EMAIL, msg.as_string())
-
         return {"message": "Email has been sent successfully"}
     except Exception as e:
         logger.error(f"Error sending email: {str(e)}")
