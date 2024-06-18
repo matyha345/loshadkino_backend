@@ -37,7 +37,10 @@ async def handle_get_photo(photo_name: str):
 
 @app.get("/photos")
 async def handle_list_photos():
-    return list_photos()
+    photos = list_photos()
+    base_url = "http://localhost:8000/photos"
+    photo_urls = [f"{base_url}/{photo}" for photo in photos["photos"]]
+    return {"photos": photo_urls}
 
 
 @app.post("/photos/")

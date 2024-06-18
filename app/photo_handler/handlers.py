@@ -19,23 +19,24 @@ def list_photos():
     if not os.path.exists(PHOTOS_DIR):
         os.makedirs(PHOTOS_DIR)
     photos = os.listdir(PHOTOS_DIR)
+
+    # Фильтруем системные файлы
+    photos = [photo for photo in photos if not photo.startswith('.')]
+
     return {"photos": photos}
 
 
 def save_photo(file: bytes, filename: str):
     if not os.path.exists(PHOTOS_DIR):
         os.makedirs(PHOTOS_DIR)
-    file_path = os.path.join(PHOTOS_DIR, filename)
+
+    # Открываем изображение из переданных байтов
     image = Image.open(BytesIO(file))
 
-    # Проверка формата изображения и конвертация в JPEG при необходимости
-    if image.format != 'JPEG':
-        rgb_image = image.convert('RGB')
-        jpeg_filename = os.path.splitext(filename)[0] + ".jpg"
-        file_path = os.path.join(PHOTOS_DIR, jpeg_filename)
-        rgb_image.save(file_path, format='JPEG')
-        return {"filename": jpeg_filename}
-    else:
-        with open(file_path, "wb") as f:
-            f.write(file)
-        return {"filename": filename}
+    # Конвертируем изображение в RGB и сохраняем как JPEG
+    rgb_image = image.convert('RGB')
+    jpeg_filename = os.path.splitext(filename)[0] + ".jpg"
+    file_path = os.path.join(PHOTOS_DIR, jpeg_filename)
+    rgb_image.save(file_path, format='JPEG')
+
+    return {"filename": jpeg_filename}
